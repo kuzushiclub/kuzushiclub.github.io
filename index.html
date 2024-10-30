@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Week of Classes - Kuzushi Club Chattanooga</title>
+    <style>
+        /* Theme Colors */
+        :root {
+            --orange: #D97300;
+            --beige: #F5F5DC;
+            --teal: #008080;
+            --cyan: #00CED1;
+            --dark-gray: #333;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--beige);
+            color: var(--dark-gray);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: var(--teal);
+            color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Form */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="email"], input[type="tel"] {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            background-color: var(--orange);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Claim Your Free Week of Classes!</h1>
+        <p>Sign up below to enjoy a free week at Kuzushi Club Chattanooga. No strings attached, just bring yourself and experience the art of jiu jitsu.</p>
+        
+        <!-- Form Section -->
+        <form id="leadForm">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" required>
+
+            <button type="submit">Get My Free Week</button>
+        </form>
+        <p id="responseMessage"></p>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById("leadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+
+            // Send data to Airtable
+            try {
+                const response = await fetch("https://api.airtable.com/v0/appMdbsH7G76v8Ofe/tblVKHOpMuD4fbciA", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer pat6dNEw8nLr1crVV.486ce6325f1fe9b8ec62316a6732c20af631826a82256ad621a71c05d70aeb96",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        fields: {
+                            Name: name,
+                            Email: email,
+                            Phone: phone
+                        }
+                    })
+                });
+
+                // Handle response
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById("responseMessage").innerText = "Thank you! Your free week is confirmed. Check your email for details!";
+                    document.getElementById("leadForm").reset();
+                } else {
+                    document.getElementById("responseMessage").innerText = "Oops! There was an error. Please try again.";
+                    console.error(result);
+                }
+            } catch (error) {
+                document.getElementById("responseMessage").innerText = "Error connecting to the server. Please try again later.";
+                console.error("Error:", error);
+            }
+        });
+    </script>
+</body>
+</html>
